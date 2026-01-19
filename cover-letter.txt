@@ -1,0 +1,18 @@
+[Live Demo: https://proposal-sparkle-12.lovable.app] - I built this for you to show I understand your project.
+
+Hi,
+
+Based on what you described, this barcode reader modernization lives or dies on three systems: offline data sync, camera and external reader integration, and cross-platform feature parity.
+
+Since I've done this before, I can help you avoid common mistakes:
+
+- Offline operation: Most teams assume connectivity and lose data during outages. I use SQLite as the source of truth with background sync queues that resolve conflicts automatically.
+
+- Reader integration: Camera APIs are tricky and external readers like Zebra or Honeywell need proper HID handling. I build a unified abstraction layer with auto-detection so switching between camera and hardware readers is seamless.
+
+- Legacy modernization: Big-bang rewrites fail 70% of the time. I use the strangler fig pattern with feature flags, migrating piece by piece while keeping the existing app running.
+
+The repo is public - feel free to use any of this for your own work if it inspires you. I'd be grateful for the opportunity to work together.
+
+Thanks,
+Humam
