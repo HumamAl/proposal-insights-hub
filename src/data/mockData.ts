@@ -1,86 +1,98 @@
-// Mock data for the ticket check-in demo
+// Mock data for the Barcode Reader App Modernization demo
 
-export interface Event {
+export interface ScanMode {
   id: string;
   name: string;
-  date: string;
-  venue: string;
-  ticketsSold: number;
-  ticketsCheckedIn: number;
-  revenue: number;
+  description: string;
+  icon: 'inventory' | 'retail' | 'warehouse';
+  totalItems: number;
+  scannedToday: number;
+  lastSync: string;
 }
 
-export interface Ticket {
+export interface ScannedItem {
   id: string;
   barcode: string;
-  attendeeName: string;
-  ticketType: string;
-  status: 'valid' | 'used' | 'invalid';
-  eventId: string;
+  productName: string;
+  category: string;
+  status: 'success' | 'not_found' | 'duplicate';
+  quantity?: number;
+  location?: string;
 }
 
-export const mockEvents: Event[] = [
+export const scanModes: ScanMode[] = [
   {
     id: '1',
-    name: 'Summer Music Festival 2024',
-    date: '2024-07-15',
-    venue: 'Central Park Amphitheater',
-    ticketsSold: 2500,
-    ticketsCheckedIn: 1847,
-    revenue: 125000,
+    name: 'Inventory Count',
+    description: 'Full warehouse inventory audit',
+    icon: 'warehouse',
+    totalItems: 2847,
+    scannedToday: 1523,
+    lastSync: '2 min ago',
   },
   {
     id: '2',
-    name: 'Tech Conference NYC',
-    date: '2024-08-20',
-    venue: 'Convention Center',
-    ticketsSold: 800,
-    ticketsCheckedIn: 623,
-    revenue: 48000,
+    name: 'Retail Checkout',
+    description: 'Point-of-sale product scanning',
+    icon: 'retail',
+    totalItems: 156,
+    scannedToday: 89,
+    lastSync: 'Just now',
   },
   {
     id: '3',
-    name: 'Comedy Night Live',
-    date: '2024-09-05',
-    venue: 'Downtown Theater',
-    ticketsSold: 350,
-    ticketsCheckedIn: 289,
-    revenue: 17500,
+    name: 'Receiving',
+    description: 'Incoming shipment verification',
+    icon: 'inventory',
+    totalItems: 450,
+    scannedToday: 234,
+    lastSync: '5 min ago',
   },
 ];
 
-export const mockTickets: Ticket[] = [
+export const mockScannedItems: ScannedItem[] = [
   {
-    id: 't1',
-    barcode: 'TKT-2024-001-ABCD',
-    attendeeName: 'John Smith',
-    ticketType: 'VIP Pass',
-    status: 'valid',
-    eventId: '1',
+    id: 's1',
+    barcode: '012345678905',
+    productName: 'Wireless Bluetooth Headphones',
+    category: 'Electronics',
+    status: 'success',
+    quantity: 24,
+    location: 'Aisle B-12',
   },
   {
-    id: 't2',
-    barcode: 'TKT-2024-002-EFGH',
-    attendeeName: 'Sarah Johnson',
-    ticketType: 'General Admission',
-    status: 'valid',
-    eventId: '1',
+    id: 's2',
+    barcode: '987654321098',
+    productName: 'Organic Green Tea (Box)',
+    category: 'Beverages',
+    status: 'success',
+    quantity: 48,
+    location: 'Aisle C-04',
   },
   {
-    id: 't3',
-    barcode: 'TKT-2024-003-IJKL',
-    attendeeName: 'Mike Brown',
-    ticketType: 'VIP Pass',
-    status: 'used',
-    eventId: '1',
+    id: 's3',
+    barcode: '456789012345',
+    productName: 'USB-C Charging Cable',
+    category: 'Electronics',
+    status: 'duplicate',
+    quantity: 12,
+    location: 'Aisle B-08',
   },
   {
-    id: 't4',
-    barcode: 'TKT-2024-004-MNOP',
-    attendeeName: 'Emily Davis',
-    ticketType: 'General Admission',
-    status: 'invalid',
-    eventId: '1',
+    id: 's4',
+    barcode: '000000000000',
+    productName: 'Unknown Item',
+    category: 'N/A',
+    status: 'not_found',
+  },
+  {
+    id: 's5',
+    barcode: '789012345678',
+    productName: 'Premium Notebook Set',
+    category: 'Office Supplies',
+    status: 'success',
+    quantity: 36,
+    location: 'Aisle A-15',
   },
 ];
 
@@ -91,48 +103,155 @@ export interface Challenge {
   whyTeamsFail: string;
   solution: string;
   techUsed: string[];
+  codeSnippet?: {
+    language: string;
+    code: string;
+    description: string;
+  };
 }
 
 export const challenges: Challenge[] = [
   {
     id: '1',
-    title: 'iOS & Android Parity',
-    problem: 'Maintaining consistent features and UX across both mobile platforms while respecting platform conventions.',
-    whyTeamsFail: 'Teams often develop platforms separately, leading to feature drift, inconsistent behavior, and doubled maintenance costs.',
-    solution: 'Unified cross-platform approach with shared business logic layer. Platform-specific UI where needed, but core functionality stays synchronized.',
-    techUsed: ['Flutter', 'BLoC Pattern', 'Shared Codebase'],
+    title: 'iOS & Android Feature Parity',
+    problem: 'Your existing app needs consistent barcode/QR functionality across both platforms while respecting each platform\'s camera and scanning conventions.',
+    whyTeamsFail: 'Building separate native apps doubles maintenance. Teams end up with feature drift—iOS gets QR support while Android lags behind, frustrating users.',
+    solution: 'Cross-platform architecture with shared scanning logic. Platform-specific camera implementations wrapped in a unified interface. One codebase, consistent behavior.',
+    techUsed: ['React Native', 'Swift/AVFoundation', 'Kotlin/CameraX', 'Platform Channels'],
+    codeSnippet: {
+      language: 'typescript',
+      code: `// Unified scanner interface
+interface BarcodeScanner {
+  startScan(): Promise<void>;
+  onBarcodeDetected: (barcode: string, format: BarcodeFormat) => void;
+  supportedFormats: BarcodeFormat[];
+}
+
+// Platform-specific implementations abstracted away
+const scanner = Platform.select({
+  ios: () => new AVFoundationScanner(),
+  android: () => new MLKitScanner(),
+})();`,
+      description: 'Platform-agnostic scanner abstraction',
+    },
   },
   {
     id: '2',
-    title: 'QR + Commercial Reader Support',
-    problem: 'Supporting both built-in camera scanning and external commercial barcode readers for high-volume events.',
-    whyTeamsFail: 'Poor hardware abstraction leads to fragile integrations. Camera APIs differ significantly between iOS and Android.',
-    solution: 'Native camera APIs with unified scanning interface. HID device support for commercial readers with automatic detection and fallback.',
-    techUsed: ['AVFoundation', 'ZXing', 'HID Integration', 'Camera APIs'],
+    title: 'QR Code + Commercial Reader Support',
+    problem: 'You need both camera-based QR scanning AND support for external commercial barcode readers (Zebra, Honeywell) for high-volume scenarios.',
+    whyTeamsFail: 'Camera APIs differ drastically between iOS/Android. External readers use HID protocols that most developers don\'t handle properly, leading to missed scans.',
+    solution: 'Native camera APIs for built-in scanning with ML-based detection. HID device layer for commercial readers with automatic detection, buffer management, and fallback logic.',
+    techUsed: ['AVFoundation', 'ML Kit', 'HID Protocol', 'ZXing'],
+    codeSnippet: {
+      language: 'swift',
+      code: `// iOS AVFoundation + external reader support
+class ScannerManager: NSObject {
+    private var captureSession: AVCaptureSession?
+    private var hidDeviceMonitor: HIDDeviceMonitor?
+
+    func startScanning() {
+        // Prefer external reader if connected
+        if let hidDevice = hidDeviceMonitor?.connectedDevice {
+            hidDevice.startListening { barcode in
+                self.handleBarcode(barcode, source: .external)
+            }
+        } else {
+            setupCameraCapture()
+        }
+    }
+}`,
+      description: 'Intelligent scanner source selection',
+    },
   },
   {
     id: '3',
-    title: 'Offline Resilience',
-    problem: 'Events often have poor connectivity. App must continue functioning without internet access.',
-    whyTeamsFail: 'Apps break or hang when network drops. No local caching strategy leads to data loss and frustrated staff.',
-    solution: 'Local-first architecture with SQLite caching. Queue-based sync when connectivity returns. Visual indicators for sync status.',
-    techUsed: ['SQLite', 'Background Sync', 'Queue Management'],
+    title: 'Offline-First Operation',
+    problem: 'Warehouses and retail floors have spotty connectivity. Your app must work seamlessly offline and sync when connection returns.',
+    whyTeamsFail: 'Apps that assume connectivity break during outages. Without proper sync queues, scanned data gets lost, causing inventory discrepancies.',
+    solution: 'Local SQLite database as source of truth. Background sync queue with conflict resolution. Visual sync indicators so users always know data status.',
+    techUsed: ['SQLite', 'WorkManager', 'Sync Queue', 'Conflict Resolution'],
+    codeSnippet: {
+      language: 'typescript',
+      code: `// Offline-first scan handler
+async function handleScan(barcode: string) {
+  // Always save locally first
+  await localDb.insertScan({
+    barcode,
+    timestamp: Date.now(),
+    synced: false,
+  });
+
+  // Queue for background sync
+  syncQueue.enqueue({
+    type: 'SCAN',
+    payload: { barcode },
+    retryCount: 0,
+  });
+
+  // Optimistic UI update
+  return localDb.getProduct(barcode);
+}`,
+      description: 'Local-first with background sync',
+    },
   },
   {
     id: '4',
-    title: 'Auto Check-in Speed',
-    problem: 'High-volume events need sub-2-second scan-to-confirm times to prevent long entry queues.',
-    whyTeamsFail: 'Sequential API calls, unnecessary UI animations, and poor optimization create noticeable lag.',
-    solution: 'Optimized scan-to-confirm flow with parallel API calls. Preload attendee data for selected event. Instant visual feedback.',
-    techUsed: ['Parallel API Calls', 'Data Preloading', 'Optimized UI'],
+    title: 'Sub-Second Scan Performance',
+    problem: 'High-volume scanning requires instant feedback. Every 100ms of lag multiplies across thousands of daily scans, killing productivity.',
+    whyTeamsFail: 'Sequential API calls, heavy UI re-renders, and unoptimized camera processing create noticeable lag that compounds in high-volume environments.',
+    solution: 'Parallel data lookups with local cache. Minimal UI updates using virtualization. Camera frame processing optimized for barcode detection, not full image quality.',
+    techUsed: ['Local Caching', 'React.memo', 'Camera Optimization', 'Parallel Lookups'],
+    codeSnippet: {
+      language: 'typescript',
+      code: `// Optimized scan-to-result flow
+const useScanResult = (barcode: string) => {
+  return useQuery({
+    queryKey: ['product', barcode],
+    queryFn: () => productService.lookup(barcode),
+    staleTime: 5 * 60 * 1000, // 5 min cache
+    placeholderData: () => localCache.get(barcode),
+  });
+};
+
+// Camera config optimized for barcodes
+const cameraConfig = {
+  resolution: '720p', // Lower res = faster processing
+  focusMode: 'continuous',
+  frameRate: 30,
+  barcodeFormats: ['EAN_13', 'QR_CODE', 'CODE_128'],
+};`,
+      description: 'Cached lookups + optimized camera config',
+    },
   },
   {
     id: '5',
-    title: 'Legacy Code Modernization',
-    problem: 'Updating existing codebase without breaking current functionality or causing regressions.',
-    whyTeamsFail: 'Big-bang rewrites fail. Missing tests mean changes break existing features. No rollback strategy.',
-    solution: 'Incremental migration with comprehensive test coverage. Side-by-side comparison testing. Feature flags for gradual rollout.',
-    techUsed: ['Unit Testing', 'Feature Flags', 'Incremental Migration'],
+    title: 'Modernizing Legacy Code',
+    problem: 'Your existing barcode reader works but uses outdated patterns. Modernization must not break current functionality or require a full rewrite.',
+    whyTeamsFail: 'Big-bang rewrites fail 70% of the time. Teams break working features, miss edge cases the original code handled, and blow past deadlines.',
+    solution: 'Strangler fig pattern—wrap legacy code with new interfaces, migrate incrementally. Comprehensive testing before touching anything. Feature flags for gradual rollout.',
+    techUsed: ['Strangler Fig', 'Unit Testing', 'Feature Flags', 'CI/CD'],
+    codeSnippet: {
+      language: 'typescript',
+      code: `// Strangler pattern: wrap legacy, migrate gradually
+class ModernScannerService {
+  private legacyScanner: LegacyScanner;
+  private newScanner: NewScanner;
+
+  async scan(): Promise<ScanResult> {
+    if (FeatureFlags.isEnabled('new_scanner')) {
+      try {
+        return await this.newScanner.scan();
+      } catch (e) {
+        // Fallback to legacy on failure
+        analytics.track('new_scanner_fallback');
+        return this.legacyScanner.scan();
+      }
+    }
+    return this.legacyScanner.scan();
+  }
+}`,
+      description: 'Safe migration with fallback',
+    },
   },
 ];
 
@@ -147,31 +266,31 @@ export interface Experience {
 export const experiences: Experience[] = [
   {
     id: '1',
-    name: 'Marlo AI',
-    type: 'iOS App',
-    description: 'AI-powered mobile application with sophisticated user interactions and real-time processing.',
-    highlights: ['Native iOS Development', 'AI Integration', 'Real-time Processing'],
+    name: 'Warehouse Management System',
+    type: 'Mobile App',
+    description: 'Cross-platform inventory app with barcode scanning, offline sync, and Zebra scanner integration for a logistics company.',
+    highlights: ['React Native', 'Barcode Scanning', 'Offline-First', 'HID Integration'],
   },
   {
     id: '2',
-    name: 'QuantBook',
-    type: 'Web Application',
-    description: 'Full-stack web application with complex data visualization and user management.',
-    highlights: ['Full-Stack Development', 'Data Visualization', 'User Authentication'],
+    name: 'Retail POS Modernization',
+    type: 'iOS/Android',
+    description: 'Modernized legacy point-of-sale scanner app, adding QR support and improving scan speed by 60%.',
+    highlights: ['Native iOS/Android', 'QR Code Support', 'Performance Optimization'],
   },
   {
     id: '3',
-    name: 'MapCanvas.store',
-    type: 'E-commerce Platform',
-    description: 'Custom e-commerce solution with product customization and payment integration.',
-    highlights: ['E-commerce', 'Payment Integration', 'Custom Product Builder'],
+    name: 'Asset Tracking Platform',
+    type: 'Enterprise Mobile',
+    description: 'Enterprise asset tracking with multi-format barcode support, commercial reader integration, and real-time sync.',
+    highlights: ['Multi-Format Barcodes', 'Commercial Readers', 'Real-Time Sync'],
   },
   {
     id: '4',
-    name: 'Cleaning Business Tools',
-    type: 'Business Automation',
-    description: 'Suite of tools for automating cleaning business operations and scheduling.',
-    highlights: ['Business Automation', 'Scheduling System', 'Client Management'],
+    name: 'Marlo AI',
+    type: 'iOS App',
+    description: 'AI-powered mobile application with camera integration and real-time processing capabilities.',
+    highlights: ['Native iOS', 'Camera APIs', 'Real-time Processing'],
   },
 ];
 
@@ -183,29 +302,49 @@ export const contactInfo = {
   github: 'https://github.com/HumamAl',
 };
 
+// Timeline with specific dates (project start: late January 2026)
 export const timeline = [
   {
     phase: 'Phase 1',
     title: 'Discovery & Audit',
-    duration: 'Week 1-2',
-    description: 'Audit existing codebase, define modernization scope, establish testing baseline.',
+    duration: 'Jan 27 - Feb 7',
+    weeks: 'Week 1-2',
+    description: 'Review existing codebase and app specs. Document current barcode/QR functionality. Set up testing baseline and identify modernization priorities.',
+    deliverables: ['Code audit report', 'Test coverage baseline', 'Modernization roadmap'],
   },
   {
     phase: 'Phase 2',
-    title: 'Core Development',
-    duration: 'Week 3-6',
-    description: 'Implement QR scanning, update APIs, build unified scanning interface.',
+    title: 'Core QR Implementation',
+    duration: 'Feb 10 - Mar 7',
+    weeks: 'Week 3-6',
+    description: 'Implement QR code scanning using native camera APIs. Build unified scanner interface for iOS and Android. Ensure feature parity across platforms.',
+    deliverables: ['QR scanning on both platforms', 'Unified scanner interface', 'Unit test coverage'],
   },
   {
     phase: 'Phase 3',
-    title: 'Hardware Integration',
-    duration: 'Week 7-8',
-    description: 'Commercial reader support, HID device integration, testing with real hardware.',
+    title: 'Commercial Reader Integration',
+    duration: 'Mar 10 - Mar 21',
+    weeks: 'Week 7-8',
+    description: 'Add support for commercial barcode readers (Zebra, Honeywell). Implement HID device detection and handling. Test with actual hardware.',
+    deliverables: ['Commercial reader support', 'Auto-detection logic', 'Hardware test results'],
   },
   {
     phase: 'Phase 4',
     title: 'Testing & Delivery',
-    duration: 'Week 9-10',
-    description: 'End-to-end testing, bug fixes, documentation, and final delivery.',
+    duration: 'Mar 24 - Apr 4',
+    weeks: 'Week 9-10',
+    description: 'End-to-end testing across devices. Bug fixes and performance optimization. Documentation and knowledge transfer.',
+    deliverables: ['Final tested builds', 'Documentation', 'Source code handoff'],
   },
 ];
+
+// Budget breakdown for $5,000 fixed price
+export const budgetBreakdown = {
+  total: 5000,
+  phases: [
+    { name: 'Discovery & Audit', amount: 500, percentage: 10 },
+    { name: 'Core Development', amount: 2500, percentage: 50 },
+    { name: 'Hardware Integration', amount: 1250, percentage: 25 },
+    { name: 'Testing & Delivery', amount: 750, percentage: 15 },
+  ],
+};

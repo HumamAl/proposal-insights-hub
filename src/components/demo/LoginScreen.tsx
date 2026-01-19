@@ -1,52 +1,56 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wifi, WifiOff, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Wifi, WifiOff, Loader2, QrCode, Barcode, Smartphone } from 'lucide-react';
 
 interface LoginScreenProps {
   onLogin: () => void;
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [apiUrl, setApiUrl] = useState('https://api.strawhousetickets.com');
-  const [apiKey, setApiKey] = useState('');
   const [isOnline, setIsOnline] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleStart = () => {
     setIsLoading(true);
-    // Simulate API connection
+    // Simulate app initialization
     setTimeout(() => {
       setIsLoading(false);
       onLogin();
-    }, 1500);
+    }, 800);
   };
 
   return (
     <div className="flex min-h-[500px] items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <svg
-              className="h-8 w-8 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-              />
-            </svg>
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg">
+            <div className="relative">
+              <QrCode className="h-10 w-10 text-primary-foreground" />
+              <Barcode className="absolute -bottom-1 -right-1 h-5 w-5 text-primary-foreground/80" />
+            </div>
           </div>
-          <CardTitle className="text-2xl">Ticket Check-In</CardTitle>
-          <CardDescription>Connect to your ticketing system</CardDescription>
+          <CardTitle className="text-2xl">Barcode Reader</CardTitle>
+          <CardDescription>Modernized scanning experience</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Feature highlights */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-lg bg-muted/50 p-3">
+              <QrCode className="mx-auto h-5 w-5 text-primary" />
+              <p className="mt-1 text-xs text-muted-foreground">QR Codes</p>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-3">
+              <Barcode className="mx-auto h-5 w-5 text-primary" />
+              <p className="mt-1 text-xs text-muted-foreground">Barcodes</p>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-3">
+              <Smartphone className="mx-auto h-5 w-5 text-primary" />
+              <p className="mt-1 text-xs text-muted-foreground">External</p>
+            </div>
+          </div>
+
           {/* Network Status */}
           <div className="flex items-center justify-center gap-2 rounded-lg bg-muted p-2">
             {isOnline ? (
@@ -56,8 +60,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               </>
             ) : (
               <>
-                <WifiOff className="h-4 w-4 text-destructive" />
-                <span className="text-sm text-destructive">Offline</span>
+                <WifiOff className="h-4 w-4 text-amber-600" />
+                <span className="text-sm text-amber-600">Offline Mode</span>
               </>
             )}
             <Button
@@ -70,45 +74,36 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             </Button>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="apiUrl">API URL</Label>
-            <Input
-              id="apiUrl"
-              value={apiUrl}
-              onChange={(e) => setApiUrl(e.target.value)}
-              placeholder="https://api.example.com"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">API Key</Label>
-            <Input
-              id="apiKey"
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Enter your API key"
-            />
-          </div>
+          {!isOnline && (
+            <p className="text-center text-xs text-muted-foreground">
+              App works offline. Data syncs when connection returns.
+            </p>
+          )}
 
           <Button
             className="w-full"
-            onClick={handleLogin}
-            disabled={isLoading || !isOnline}
+            size="lg"
+            onClick={handleStart}
+            disabled={isLoading}
           >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Connecting...
+                Starting...
               </>
             ) : (
-              'Connect'
+              'Start Scanning'
             )}
           </Button>
 
-          <p className="text-center text-xs text-muted-foreground">
-            Demo mode: Any credentials will work
-          </p>
+          <div className="flex items-center justify-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              Demo Mode
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              Interactive preview
+            </span>
+          </div>
         </CardContent>
       </Card>
     </div>
