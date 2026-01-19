@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { EventSelector } from './EventSelector';
 import { ScannerInterface } from './ScannerInterface';
 import { StatsScreen } from './StatsScreen';
-import { type ScanMode } from '@/data/mockData';
+import type { ScanMode } from '@/data/mockData';
 
 type DemoStep = 'selectEvent' | 'scanner' | 'stats';
 
