@@ -1,19 +1,15 @@
 import { useState } from 'react';
-import { LoginScreen } from './LoginScreen';
 import { EventSelector } from './EventSelector';
 import { ScannerInterface } from './ScannerInterface';
 import { StatsScreen } from './StatsScreen';
 import { type ScanMode } from '@/data/mockData';
 
-type DemoStep = 'login' | 'selectEvent' | 'scanner' | 'stats';
+type DemoStep = 'selectEvent' | 'scanner' | 'stats';
 
 export function AppDemo() {
-  const [step, setStep] = useState<DemoStep>('login');
+  // Start directly at mode selection - no login needed for demo
+  const [step, setStep] = useState<DemoStep>('selectEvent');
   const [selectedMode, setSelectedMode] = useState<ScanMode | null>(null);
-
-  const handleLogin = () => {
-    setStep('selectEvent');
-  };
 
   const handleModeSelect = (mode: ScanMode) => {
     setSelectedMode(mode);
@@ -54,8 +50,6 @@ export function AppDemo() {
 
         {/* App content */}
         <div className="min-h-[600px] bg-background">
-          {step === 'login' && <LoginScreen onLogin={handleLogin} />}
-
           {step === 'selectEvent' && (
             <EventSelector
               selectedEvent={selectedMode}
@@ -84,14 +78,6 @@ export function AppDemo() {
 
       {/* Demo controls */}
       <div className="mt-4 flex justify-center gap-2">
-        <button
-          onClick={() => setStep('login')}
-          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            step === 'login' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'
-          }`}
-        >
-          Start
-        </button>
         <button
           onClick={() => setStep('selectEvent')}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
