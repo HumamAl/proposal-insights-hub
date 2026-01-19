@@ -1,4 +1,4 @@
-[Live Demo: https://proposal-sparkle-12.lovable.app] - I built this for you to show I understand your project.
+[Live Demo: https://proposal-sparkle-12.lovable.app] [Repo: https://github.com/HumamAl/proposal-insights-hub] - I built this for you to show I understand your project.
 
 Hi,
 
