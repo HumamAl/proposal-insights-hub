@@ -1,15 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { challenges } from '@/data/mockData';
-import { AlertTriangle, XCircle, CheckCircle2, Cpu } from 'lucide-react';
+import { AlertTriangle, XCircle, CheckCircle2, Cpu, Code, ChevronDown, ChevronUp } from 'lucide-react';
 
 export function ChallengesTab() {
+  const [expandedCode, setExpandedCode] = useState<string | null>(null);
+
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold md:text-3xl">Project Challenges</h2>
+        <h2 className="text-2xl font-bold md:text-3xl">Technical Challenges</h2>
         <p className="mt-2 text-muted-foreground">
-          Key technical challenges and how I'll solve them
+          Key challenges specific to your barcode reader modernization and how I'll solve them
         </p>
       </div>
 
@@ -72,6 +76,45 @@ export function ChallengesTab() {
                   </div>
                 </div>
               </div>
+
+              {/* Code Snippet (Collapsible) */}
+              {challenge.codeSnippet && (
+                <div className="border-t">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between rounded-none py-3 px-4 hover:bg-muted/50"
+                    onClick={() => setExpandedCode(
+                      expandedCode === challenge.id ? null : challenge.id
+                    )}
+                  >
+                    <div className="flex items-center gap-2 text-sm">
+                      <Code className="h-4 w-4" />
+                      <span className="font-medium">Code Example:</span>
+                      <span className="text-muted-foreground">{challenge.codeSnippet.description}</span>
+                    </div>
+                    {expandedCode === challenge.id ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  {expandedCode === challenge.id && (
+                    <div className="bg-slate-950 p-4">
+                      <div className="mb-2 flex items-center justify-between">
+                        <Badge variant="outline" className="text-xs text-slate-400 border-slate-700">
+                          {challenge.codeSnippet.language}
+                        </Badge>
+                      </div>
+                      <pre className="overflow-x-auto text-sm">
+                        <code className="text-slate-300 font-mono whitespace-pre">
+                          {challenge.codeSnippet.code}
+                        </code>
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}

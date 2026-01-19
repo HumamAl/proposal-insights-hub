@@ -2,7 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppDemo } from '@/components/demo/AppDemo';
 import { ChallengesTab } from '@/components/ChallengesTab';
 import { ProposalTab } from '@/components/ProposalTab';
-import { Smartphone, AlertTriangle, FileText } from 'lucide-react';
+import { Smartphone, Code2, FileText } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -12,10 +12,10 @@ const Index = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="text-center">
             <h1 className="text-3xl font-bold md:text-4xl">
-              Ticket Check-In App Modernization
+              Barcode Reader App Modernization
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Proposal for Straw House Tickets
+              Interactive Proposal Demo
             </p>
           </div>
         </div>
@@ -28,12 +28,12 @@ const Index = () => {
             <TabsTrigger value="app" className="flex items-center gap-2">
               <Smartphone className="h-4 w-4" />
               <span className="hidden sm:inline">App Demo</span>
-              <span className="sm:hidden">App</span>
+              <span className="sm:hidden">Demo</span>
             </TabsTrigger>
             <TabsTrigger value="challenges" className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4" />
+              <Code2 className="h-4 w-4" />
               <span className="hidden sm:inline">Challenges</span>
-              <span className="sm:hidden">Issues</span>
+              <span className="sm:hidden">Tech</span>
             </TabsTrigger>
             <TabsTrigger value="proposal" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -45,7 +45,7 @@ const Index = () => {
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold md:text-3xl">Interactive Demo</h2>
               <p className="mt-2 text-muted-foreground">
-                Experience the core check-in flow with mock data
+                Experience the modernized barcode scanning flow
               </p>
             </div>
             <AppDemo />
@@ -65,7 +65,7 @@ const Index = () => {
       <footer className="border-t bg-muted/30 py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>Built with React, TypeScript, Tailwind CSS & shadcn/ui</p>
-          <p className="mt-1">© 2024 Humam Al Rubaye</p>
+          <p className="mt-1">Humam Al Rubaye | Available for immediate start</p>
         </div>
       </footer>
     </div>
